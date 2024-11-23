@@ -97,14 +97,15 @@ print(filtered_frequencies)
 
 
 # Task 4: Define a function that takes a string and an integer k, and returns a dictionary with
-#   the token frequencies of only those tokens that occur more than k times in the string.
+#   the token frequencies of only those tokens that occur >= k times in the string.
 
 # Your code here:
 # -----------------------------------------------
 def token_counts(string: str, k: int = 1) -> dict:
-    # Your code
+    # Tokenize the string, convert to lowercase, and strip punctuation
     tokens = [word.strip('!,.?;:"\'').lower() for word in string.split()]
-    dictionary = {word: tokens.count(word) for word in set(tokens) if tokens.count(word) > k}
+    # Create a dictionary with token frequencies >= k
+    dictionary = {word: tokens.count(word) for word in set(tokens) if tokens.count(word) >= k}
     return dictionary
 
 # test:
@@ -210,19 +211,19 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 
 # Your code here:
 # -----------------------------------------------
-def tokenize_and_encode(documents: list) -> list:
-    # Hint: use your make_vocabulary_map and tokenize function
-    # Your code
-    # Flatten all tokens from all documents and generate vocabulary maps
-    t2i, i2t = make_vocabulary_map(documents)
+def tokenize_and_encode(documents: list) -> tuple:
+    # Step 1: Create token-to-ID and ID-to-token mappings
+    unique_tokens = sorted(set([word.strip('!,.?;:"\'').lower() for doc in documents for word in doc.split()]))
+    token_to_id = {token: idx for idx, token in enumerate(unique_tokens)}
+    id_to_token = {idx: token for token, idx in token_to_id.items()}
     
-    # Encode each document into a list of token IDs
+    # Step 2: Encode each document into a list of token IDs
     enc = []
     for doc in documents:
-        tokens = [word.strip('!,.?;:"\'').lower() for word in doc.split()]  # Tokenize and clean
-        enc.append([t2i[token] for token in tokens if token in t2i])
-        
-    return enc, t2i, i2t
+        tokens = [word.strip('!,.?;:"\'').lower() for word in doc.split()]
+        enc.append([token_to_id[token] for token in tokens if token in token_to_id])
+    
+    return enc, token_to_id, id_to_token
 
 # Test:
 enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
