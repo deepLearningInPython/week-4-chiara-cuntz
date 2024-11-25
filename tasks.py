@@ -211,12 +211,11 @@ all(i2t[t2i[tok]] == tok for tok in t2i) # should be True
 
 # Your code here:
 # -----------------------------------------------
-def make_vocabulary_map(documents: list) -> tuple:
-    toks = [token for document in documents for token in tokenize(document)]
-    sorted_toks = sorted(set(toks))
-    t2i = {token: idx for idx, token in enumerate(sorted_toks)}
-    i2t = {idx: token for idx, token in enumerate(sorted_toks)}
-    return t2i, i2t
+def tokenize_and_encode(documents: list) -> tuple:
+    token_to_id, id_to_token = make_vocabulary_map(documents)
+    #encode = [[token_to_id[token.strip(string.punctuation).lower()] for token in document.split() if token.strip(string.punctuation).lower() in token_to_id] for document in documents]
+    encode = [[token_to_id[token] for token in tokenize(document) if token in token_to_id] for document in documents]
+    return encode, token_to_id, id_to_token
 
 # Test:
 enc, t2i, i2t = tokenize_and_encode([text, 'What a luck we had today!'])
